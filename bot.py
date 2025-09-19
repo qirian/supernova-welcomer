@@ -35,11 +35,11 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # ------------------------
 WELCOME_CHANNEL_ID = 1418440616131428482
 GOODBYE_CHANNEL_ID = 1418441039701610516
-STAT_CHANNEL_ID = 1418442000000000000  # Optional für Embed-Statistik
-TOTAL_USER_VOICE_CHANNEL_ID = 1418453853162176553  # TotalUserCount
-BOTS_VOICE_CHANNEL_ID = 1418453853162176553  # Bots Voice Channel (kann gleich sein oder anders)
-
+GUILD_ID = 1401492898293481505  # Server-ID
 AUTHOR_ICON = "https://images-ext-1.discordapp.net/external/ORAM7L-2USvIhk9TKRteJkF9JyLXFa0RNBvrfual4E0/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?width=848&height=848"
+
+TOTAL_USER_VOICE_NAME = "TotalUserCount"
+BOTS_VOICE_NAME = "Bots Online"
 
 # ------------------------
 # Utility Function
@@ -58,20 +58,25 @@ def create_embed(title, description_lines, image_url, thumbnail_url, footer_text
     return embed
 
 # ------------------------
-# Helper Function for Voice Channels
+# Voice Channel Update
 # ------------------------
 async def update_voice_channels(guild):
     # TotalUserCount
     total_users = guild.member_count
-    total_user_channel = guild.get_channel(TOTAL_USER_VOICE_CHANNEL_ID)
-    if total_user_channel:
-        await total_user_channel.edit(name=f"TotalUserCount: {total_users}")
+    total_channel = discord.utils.get(guild.voice_channels, name=lambda n: TOTAL_USER_VOICE_NAME in n)
+    if not total_channel:
+        # Channel erstellen, falls nicht vorhanden
+        total_channel = await guild.create_voice_channel(f"{TOTAL_USER_VOICE_NAME}: {total_users}")
+    else:
+        await total_channel.edit(name=f"{TOTAL_USER_VOICE_NAME}: {total_users}")
 
     # Bots Count
     bot_count = sum(1 for member in guild.members if member.bot)
-    bots_channel = guild.get_channel(BOTS_VOICE_CHANNEL_ID)
-    if bots_channel:
-        await bots_channel.edit(name=f"Bots Online: {bot_count}")
+    bots_channel = discord.utils.get(guild.voice_channels, name=lambda n: BOTS_VOICE_NAME in n)
+    if not bots_channel:
+        bots_channel = await guild.create_voice_channel(f"{BOTS_VOICE_NAME}: {bot_count}")
+    else:
+        await bots_channel.edit(name=f"{BOTS_VOICE_NAME}: {bot_count}")
 
 # ------------------------
 # Events
@@ -79,16 +84,13 @@ async def update_voice_channels(guild):
 @bot.event
 async def on_ready():
     print(f"✅ Eingeloggt als {bot.user}")
-    # Streaming Status setzen
-    activity = discord.Streaming(
-        name="discord.gg/supernova",
-        url="https://www.twitch.tv/qirixn"
-    )
+    # Streaming Status
+    activity = discord.Streaming(name="discord.gg/supernova", url="https://www.twitch.tv/qirixn")
     await bot.change_presence(status=discord.Status.online, activity=activity)
     print("🎬 Streaming Status gesetzt!")
 
-    # Voice Channels beim Start updaten
-    for guild in bot.guilds:
+    guild = bot.get_guild(GUILD_ID)
+    if guild:
         await update_voice_channels(guild)
 
 @bot.event
@@ -96,9 +98,7 @@ async def on_member_join(member):
     # Welcome Embed
     channel = bot.get_channel(WELCOME_CHANNEL_ID)
     if channel:
-        description_lines = [
-            f"Hey {member.mention} welcome to **discord.gg/supernova**."
-        ]
+        description_lines = [f"Hey {member.mention} welcome to **discord.gg/supernova**."]
         embed = create_embed(
             title="**Welcome to discord.gg/supernova**",
             description_lines=description_lines,
@@ -118,9 +118,7 @@ async def on_member_remove(member):
     # Leave Embed
     channel = bot.get_channel(GOODBYE_CHANNEL_ID)
     if channel:
-        description_lines = [
-            "Have a good Day from **discord.gg/supernova**."
-        ]
+        description_lines = ["Have a good Day from **discord.gg/supernova**."]
         embed = create_embed(
             title="**Goodbye from discord.gg/supernova**",
             description_lines=description_lines,
