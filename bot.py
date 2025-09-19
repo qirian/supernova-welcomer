@@ -85,7 +85,7 @@ async def on_member_join(member):
             footer_text="© 2022–2024 Superbova. All Rights Reserved.",
             footer_icon="https://images-ext-1.discordapp.net/external/ORAM7L-2USvIhk9TKRteJkF9JyLXFa0RNBvrfual4E0/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?width=848&height=848"
         )
-        await channel.send(embed=embed)
+        await channel.send(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
 
 @bot.event
 async def on_member_remove(member):
@@ -95,7 +95,7 @@ async def on_member_remove(member):
             "🍀 We wish you a good Travel.",
             "🔎 And we hope you find what you searching for.",
             "🥇 It was a honour for us to had you on our Server!",
-            f"👤User: {member.name}",
+            f"👤User: {member.mention}",
             f"⌛ TotalUserCount: {member.guild.member_count}",
             "🔗 InviteLink: [Supernova Invite Link.](https://discord.gg/3mRkJ6UYwx)"
         ]
@@ -107,7 +107,7 @@ async def on_member_remove(member):
             footer_text="© 2022–2024 Superbova. All Rights Reserved.",
             footer_icon="https://images-ext-1.discordapp.net/external/ORAM7L-2USvIhk9TKRteJkF9JyLXFa0RNBvrfual4E0/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?width=848&height=848"
         )
-        await channel.send(embed=embed)
+        await channel.send(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
 
 # ------------------------
 # Run Bot
