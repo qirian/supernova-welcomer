@@ -25,7 +25,7 @@ keep_alive()
 # Discord Bot Setup
 # ------------------------
 intents = discord.Intents.default()
-intents.members = True  # für join/leave Events
+intents.members = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # ------------------------
@@ -33,6 +33,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # ------------------------
 WELCOME_CHANNEL_ID = 1418440616131428482
 LEAVE_CHANNEL_ID = 1418441039701610516
+AUTOROLE_ID = 1401763417357815848
 
 AUTHOR_ICON = "https://cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?size=1024"
 THUMBNAIL = "https://cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?size=1024"
@@ -56,6 +57,12 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
+    # AutoRole vergeben
+    role = member.guild.get_role(AUTOROLE_ID)
+    if role:
+        await member.add_roles(role)
+
+    # Welcome Embed senden
     channel = bot.get_channel(WELCOME_CHANNEL_ID)
     if channel:
         embed = discord.Embed(
@@ -71,6 +78,7 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
+    # Leave Embed senden
     channel = bot.get_channel(LEAVE_CHANNEL_ID)
     if channel:
         embed = discord.Embed(
