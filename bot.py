@@ -31,13 +31,14 @@ intents.guilds = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # ------------------------
-# Channels
+# Channels & IDs
 # ------------------------
 WELCOME_CHANNEL_ID = 1418440616131428482
 GOODBYE_CHANNEL_ID = 1418441039701610516
-GUILD_ID = 1401492898293481505  # Server-ID
+GUILD_ID = 1401492898293481505
 AUTHOR_ICON = "https://images-ext-1.discordapp.net/external/ORAM7L-2USvIhk9TKRteJkF9JyLXFa0RNBvrfual4E0/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?width=848&height=848"
 
+AUTO_ROLE_ID = 1401763417357815848
 TOTAL_USER_VOICE_NAME = "TotalUserCount"
 BOTS_VOICE_NAME = "Bots Online"
 
@@ -65,7 +66,6 @@ async def update_voice_channels(guild):
     total_users = guild.member_count
     total_channel = discord.utils.get(guild.voice_channels, name=lambda n: TOTAL_USER_VOICE_NAME in n)
     if not total_channel:
-        # Channel erstellen, falls nicht vorhanden
         total_channel = await guild.create_voice_channel(f"{TOTAL_USER_VOICE_NAME}: {total_users}")
     else:
         await total_channel.edit(name=f"{TOTAL_USER_VOICE_NAME}: {total_users}")
@@ -95,6 +95,12 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
+    guild = member.guild
+    # AutoRole
+    role = guild.get_role(AUTO_ROLE_ID)
+    if role:
+        await member.add_roles(role)
+
     # Welcome Embed
     channel = bot.get_channel(WELCOME_CHANNEL_ID)
     if channel:
@@ -111,10 +117,12 @@ async def on_member_join(member):
         await channel.send(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
 
     # Voice Channels updaten
-    await update_voice_channels(member.guild)
+    await update_voice_channels(guild)
 
 @bot.event
 async def on_member_remove(member):
+    guild = member.guild
+
     # Leave Embed
     channel = bot.get_channel(GOODBYE_CHANNEL_ID)
     if channel:
@@ -131,7 +139,7 @@ async def on_member_remove(member):
         await channel.send(embed=embed)
 
     # Voice Channels updaten
-    await update_voice_channels(member.guild)
+    await update_voice_channels(guild)
 
 # ------------------------
 # Run Bot
