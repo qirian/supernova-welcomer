@@ -39,8 +39,8 @@ GUILD_ID = 1401492898293481505
 AUTHOR_ICON = "https://images-ext-1.discordapp.net/external/ORAM7L-2USvIhk9TKRteJkF9JyLXFa0RNBvrfual4E0/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?width=848&height=848"
 
 AUTO_ROLE_ID = 1401763417357815848
-MEMBERS_VOICE_NAME = "Members"
-BOTS_VOICE_NAME = "Bots"
+MEMBERS_VOICE_ID = 1418457806725578984
+BOTS_VOICE_ID = 1418457808214429736
 
 # ------------------------
 # Utility Function
@@ -59,23 +59,19 @@ def create_embed(title, description_lines, image_url, thumbnail_url, footer_text
     return embed
 
 # ------------------------
-# Create or Update Voice Channels
+# Update Voice Channels by ID
 # ------------------------
-async def setup_voice_channels(guild):
+async def update_voice_channels(guild):
     # Members Channel
-    members_channel = discord.utils.get(guild.voice_channels, name=MEMBERS_VOICE_NAME)
-    if not members_channel:
-        members_channel = await guild.create_voice_channel(f"{MEMBERS_VOICE_NAME}: {guild.member_count}")
-    else:
-        await members_channel.edit(name=f"{MEMBERS_VOICE_NAME}: {guild.member_count}")
+    members_channel = guild.get_channel(MEMBERS_VOICE_ID)
+    if members_channel:
+        await members_channel.edit(name=f"Members: {guild.member_count}")
 
     # Bots Channel
-    bot_count = sum(1 for m in guild.members if m.bot)
-    bots_channel = discord.utils.get(guild.voice_channels, name=BOTS_VOICE_NAME)
-    if not bots_channel:
-        bots_channel = await guild.create_voice_channel(f"{BOTS_VOICE_NAME}: {bot_count}")
-    else:
-        await bots_channel.edit(name=f"{BOTS_VOICE_NAME}: {bot_count}")
+    bots_channel = guild.get_channel(BOTS_VOICE_ID)
+    if bots_channel:
+        bot_count = sum(1 for m in guild.members if m.bot)
+        await bots_channel.edit(name=f"Bots: {bot_count}")
 
 # ------------------------
 # Events
@@ -90,7 +86,7 @@ async def on_ready():
 
     guild = bot.get_guild(GUILD_ID)
     if guild:
-        await setup_voice_channels(guild)
+        await update_voice_channels(guild)
 
 @bot.event
 async def on_member_join(member):
@@ -118,7 +114,7 @@ async def on_member_join(member):
             await channel.send(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
 
     # Update Voice Channels
-    await setup_voice_channels(guild)
+    await update_voice_channels(guild)
 
 @bot.event
 async def on_member_remove(member):
@@ -141,7 +137,7 @@ async def on_member_remove(member):
             await channel.send(embed=embed)
 
     # Update Voice Channels
-    await setup_voice_channels(guild)
+    await update_voice_channels(guild)
 
 # ------------------------
 # Run Bot
