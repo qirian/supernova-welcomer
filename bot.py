@@ -39,6 +39,8 @@ GUILD_ID = 1401492898293481505
 AUTHOR_ICON = "https://images-ext-1.discordapp.net/external/ORAM7L-2USvIhk9TKRteJkF9JyLXFa0RNBvrfual4E0/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?width=848&height=848"
 
 AUTO_ROLE_ID = 1401763417357815848
+MEMBERS_VOICE_NAME = "Members"
+BOTS_VOICE_NAME = "Bots"
 
 # ------------------------
 # Utility Function
@@ -57,6 +59,25 @@ def create_embed(title, description_lines, image_url, thumbnail_url, footer_text
     return embed
 
 # ------------------------
+# Create or Update Voice Channels
+# ------------------------
+async def setup_voice_channels(guild):
+    # Members Channel
+    members_channel = discord.utils.get(guild.voice_channels, name=MEMBERS_VOICE_NAME)
+    if not members_channel:
+        members_channel = await guild.create_voice_channel(f"{MEMBERS_VOICE_NAME}: {guild.member_count}")
+    else:
+        await members_channel.edit(name=f"{MEMBERS_VOICE_NAME}: {guild.member_count}")
+
+    # Bots Channel
+    bot_count = sum(1 for m in guild.members if m.bot)
+    bots_channel = discord.utils.get(guild.voice_channels, name=BOTS_VOICE_NAME)
+    if not bots_channel:
+        bots_channel = await guild.create_voice_channel(f"{BOTS_VOICE_NAME}: {bot_count}")
+    else:
+        await bots_channel.edit(name=f"{BOTS_VOICE_NAME}: {bot_count}")
+
+# ------------------------
 # Events
 # ------------------------
 @bot.event
@@ -66,6 +87,10 @@ async def on_ready():
     activity = discord.Streaming(name="discord.gg/supernova", url="https://www.twitch.tv/qirixn")
     await bot.change_presence(status=discord.Status.online, activity=activity)
     print("🎬 Streaming Status gesetzt!")
+
+    guild = bot.get_guild(GUILD_ID)
+    if guild:
+        await setup_voice_channels(guild)
 
 @bot.event
 async def on_member_join(member):
@@ -92,8 +117,13 @@ async def on_member_join(member):
             )
             await channel.send(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
 
+    # Update Voice Channels
+    await setup_voice_channels(guild)
+
 @bot.event
 async def on_member_remove(member):
+    guild = member.guild
+
     # Leave Embed (nur für echte User)
     if not member.bot:
         channel = bot.get_channel(GOODBYE_CHANNEL_ID)
@@ -109,6 +139,9 @@ async def on_member_remove(member):
                 author_icon=AUTHOR_ICON
             )
             await channel.send(embed=embed)
+
+    # Update Voice Channels
+    await setup_voice_channels(guild)
 
 # ------------------------
 # Run Bot
