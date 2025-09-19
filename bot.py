@@ -41,7 +41,7 @@ GOODBYE_CHANNEL_ID = 1418441039701610516
 def create_embed(title, description_lines, image_url, thumbnail_url, footer_text, footer_icon):
     description = '\n'.join([f"> {line}" for line in description_lines])
     embed = discord.Embed(
-        title=title,  # kein Hashtag
+        title=title,  # Title exakt übernommen
         description=description,
         color=0x8f1eae
     )
@@ -79,7 +79,7 @@ async def on_member_join(member):
             "🔗 InviteLink: [Supernova Invite Link](https://discord.gg/3mRkJ6UYwx)"
         ]
         embed = create_embed(
-            title="👋Welcome to Supernova | Hosted by Levin Yilmaz",
+            title="👋 Welcome to Supernova | Hosted by Levin Yilmaz",
             description_lines=description_lines,
             image_url="https://media.discordapp.net/attachments/1401822345953546284/1418437611193765888/Welcome.png?ex=68ce1e77&is=68ccccf7&hm=ea11922ec548a7438ce45a26eb96988ce281f7e9b57ebd240ffea5d3778f452e&=",
             thumbnail_url="https://cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?size=1024",
@@ -98,12 +98,12 @@ async def on_member_remove(member):
             "🔎 And we hope you find what you searching for.",
             "🥇 It was a honour for us to had you on our Server!",
             "",
-            f"👤User: {member.name}",  # Ping hier leider nicht möglich
+            f"👤User: {member.name}",  # Ping beim Leave technisch nicht möglich
             f"⌛ TotalUserCount: {member.guild.member_count}",
             "🔗 InviteLink: [Supernova Invite Link](https://discord.gg/3mRkJ6UYwx)"
         ]
         embed = create_embed(
-            title="👋Thanks for your Visit | Hosted by Levin Yilmaz",
+            title="👋 Thanks for your Visit | Hosted by Levin Yilmaz",
             description_lines=description_lines,
             image_url="https://media.discordapp.net/attachments/1401822345953546284/1418437610828988546/Good-Bye.png?ex=68ce1e77&is=68ccccf7&hm=bcf1f0ebb001ceeb793c4ed9b7022973d6d057b6ba34fcd171f3ca587b122499&=",
             thumbnail_url="https://cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?size=1024",
