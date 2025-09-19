@@ -34,6 +34,9 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 # ------------------------
 WELCOME_CHANNEL_ID = 1418440616131428482
 GOODBYE_CHANNEL_ID = 1418441039701610516
+STAT_CHANNEL_ID = 1418442000000000000  # <- hier die Channel-ID einfügen
+
+STAT_MESSAGE_ID = None  # wird später gespeichert
 
 # ------------------------
 # Utility Function
@@ -54,6 +57,37 @@ def create_embed(title, description_lines, image_url, thumbnail_url, footer_text
 AUTHOR_ICON = "https://images-ext-1.discordapp.net/external/ORAM7L-2USvIhk9TKRteJkF9JyLXFa0RNBvrfual4E0/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?width=848&height=848"
 
 # ------------------------
+# Helper Function for Stats
+# ------------------------
+async def update_stat_message(guild):
+    global STAT_MESSAGE_ID
+    channel = bot.get_channel(STAT_CHANNEL_ID)
+    if not channel:
+        return
+    description_lines = [
+        f"Current Members: {guild.member_count}"
+    ]
+    embed = create_embed(
+        title="📊 Server Statistics",
+        description_lines=description_lines,
+        image_url="",
+        thumbnail_url="",
+        footer_text="© 2022–2024 Superbova. All Rights Reserved.",
+        footer_icon=AUTHOR_ICON,
+        author_icon=AUTHOR_ICON
+    )
+    if STAT_MESSAGE_ID:
+        try:
+            msg = await channel.fetch_message(STAT_MESSAGE_ID)
+            await msg.edit(embed=embed)
+        except:
+            msg = await channel.send(embed=embed)
+            STAT_MESSAGE_ID = msg.id
+    else:
+        msg = await channel.send(embed=embed)
+        STAT_MESSAGE_ID = msg.id
+
+# ------------------------
 # Events
 # ------------------------
 @bot.event
@@ -67,8 +101,13 @@ async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=activity)
     print("🎬 Streaming Status gesetzt!")
 
+    # Stat-Message beim Start erstellen/aktualisieren
+    for guild in bot.guilds:
+        await update_stat_message(guild)
+
 @bot.event
 async def on_member_join(member):
+    # Welcome Embed
     channel = bot.get_channel(WELCOME_CHANNEL_ID)
     if channel:
         description_lines = [
@@ -85,8 +124,12 @@ async def on_member_join(member):
         )
         await channel.send(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
 
+    # Statistik aktualisieren
+    await update_stat_message(member.guild)
+
 @bot.event
 async def on_member_remove(member):
+    # Leave Embed
     channel = bot.get_channel(GOODBYE_CHANNEL_ID)
     if channel:
         description_lines = [
@@ -102,6 +145,9 @@ async def on_member_remove(member):
             author_icon=AUTHOR_ICON
         )
         await channel.send(embed=embed)
+
+    # Statistik aktualisieren
+    await update_stat_message(member.guild)
 
 # ------------------------
 # Run Bot
