@@ -41,7 +41,7 @@ GOODBYE_CHANNEL_ID = 1418441039701610516
 def create_embed(title, description_lines, image_url, thumbnail_url, footer_text, footer_icon):
     description = '\n'.join([f"> {line}" for line in description_lines])
     embed = discord.Embed(
-        title=f"# {title}",
+        title=title,  # kein Hashtag
         description=description,
         color=0x8f1eae
     )
@@ -71,11 +71,12 @@ async def on_member_join(member):
     if channel:
         description_lines = [
             "🛬 First how was your flight?",
-            "🔎 Here you find your https://discord.com/channels/1401492898293481505/1418437919319785542",
-            "🥇 At least but not last our https://discord.com/channels/1401492898293481505/1418437936709636216",
+            "🔎 Here you find your ⁠test",
+            "🥇 At least but not last our ⁠test2",
+            "",
             f"👤User: {member.mention}",
             f"⌛ TotalUserCount: {member.guild.member_count}",
-            "🔗 InviteLink: [Supernova Invite Link.](https://discord.gg/3mRkJ6UYwx)"
+            "🔗 InviteLink: [Supernova Invite Link](https://discord.gg/3mRkJ6UYwx)"
         ]
         embed = create_embed(
             title="👋Welcome to Supernova | Hosted by Levin Yilmaz",
@@ -92,12 +93,14 @@ async def on_member_remove(member):
     channel = bot.get_channel(GOODBYE_CHANNEL_ID)
     if channel:
         description_lines = [
+            "",
             "🍀 We wish you a good Travel.",
             "🔎 And we hope you find what you searching for.",
             "🥇 It was a honour for us to had you on our Server!",
-            f"👤User: {member.mention}",
+            "",
+            f"👤User: {member.name}",  # Ping hier leider nicht möglich
             f"⌛ TotalUserCount: {member.guild.member_count}",
-            "🔗 InviteLink: [Supernova Invite Link.](https://discord.gg/3mRkJ6UYwx)"
+            "🔗 InviteLink: [Supernova Invite Link](https://discord.gg/3mRkJ6UYwx)"
         ]
         embed = create_embed(
             title="👋Thanks for your Visit | Hosted by Levin Yilmaz",
@@ -107,7 +110,7 @@ async def on_member_remove(member):
             footer_text="© 2022–2024 Superbova. All Rights Reserved.",
             footer_icon="https://images-ext-1.discordapp.net/external/ORAM7L-2USvIhk9TKRteJkF9JyLXFa0RNBvrfual4E0/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/1401488134457524244/067dd861b8a4de1438d12c7bc283d935.webp?width=848&height=848"
         )
-        await channel.send(embed=embed, allowed_mentions=discord.AllowedMentions(users=True))
+        await channel.send(embed=embed)
 
 # ------------------------
 # Run Bot
