@@ -1,9 +1,8 @@
 import os
 import discord
 from discord.ext import commands, tasks
-import asyncio
-import logging
 from datetime import datetime
+from keep_alive import keep_alive
 
 # ---- Intents ----
 intents = discord.Intents.default()
@@ -17,8 +16,11 @@ GUILD_ID = 1401492898293481505
 STATUS_CHANNEL_ID = 1401715590259019816
 LOG_CHANNEL_ID = 1401822345953546284
 
-# ---- Logging ----
-logging.basicConfig(level=logging.INFO)
+# ---- Image Links ----
+IMG_THUMB = "https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
+IMG_AUTHOR = IMG_THUMB
+IMG_FOOTER = IMG_THUMB
+IMG_BANNER = "https://cdn.discordapp.com/banners/1402963593527431280/a_00aa2372c379edf2e6dbbccc1ad36c50.gif?size=1024&animated=true"
 
 # ---- On Ready ----
 @bot.event
@@ -26,11 +28,6 @@ async def on_ready():
     print(f"✅ Eingeloggt als {bot.user}")
     update_status_embed.start()
     heartbeat_embed.start()
-    await set_streaming_presence()
-
-# ---- Streaming Presence ----
-async def set_streaming_presence():
-    await bot.wait_until_ready()
     await bot.change_presence(activity=discord.Streaming(
         name="Hazmob FPS: Online Shooter",
         url="https://twitch.tv/discord"
@@ -40,11 +37,8 @@ async def set_streaming_presence():
 @tasks.loop(minutes=1)
 async def heartbeat_embed():
     channel = bot.get_channel(STATUS_CHANNEL_ID)
-    if not channel:
-        return
-
     guild = bot.get_guild(GUILD_ID)
-    if not guild:
+    if not channel or not guild:
         return
 
     embed = discord.Embed(
@@ -52,8 +46,8 @@ async def heartbeat_embed():
         description=f"Bot läuft stabil – {datetime.utcnow().strftime('%H:%M:%S UTC')}",
         color=discord.Color.green()
     )
-    embed.add_field(name="👥 Mitglieder", value=str(guild.member_count))
-    embed.set_footer(text=f"Supernova | Hosted by Levin", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+    embed.set_thumbnail(url=IMG_THUMB)
+    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
 
@@ -61,11 +55,8 @@ async def heartbeat_embed():
 @tasks.loop(minutes=5)
 async def update_status_embed():
     channel = bot.get_channel(STATUS_CHANNEL_ID)
-    if not channel:
-        return
-
     guild = bot.get_guild(GUILD_ID)
-    if not guild:
+    if not channel or not guild:
         return
 
     embed = discord.Embed(
@@ -73,13 +64,14 @@ async def update_status_embed():
         color=discord.Color.blue(),
         timestamp=datetime.utcnow()
     )
-    embed.set_thumbnail(url=bot.user.avatar.url if bot.user.avatar else None)
+    embed.set_thumbnail(url=IMG_THUMB)
+    embed.set_image(url=IMG_BANNER)
     embed.add_field(name="🤖 Bot", value="✅ Online", inline=True)
     embed.add_field(name="👥 Mitglieder", value=str(guild.member_count), inline=True)
     embed.add_field(name="🟢 Status", value="Stabil", inline=True)
-    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
 
-    # Versuchen, die letzte Nachricht vom Bot zu finden und zu editieren
+    # Editieren statt spammen
     async for msg in channel.history(limit=20):
         if msg.author == bot.user and msg.embeds:
             await msg.edit(embed=embed)
@@ -88,33 +80,50 @@ async def update_status_embed():
         await channel.send(embed=embed)
 
 # ---- Logging ----
-@bot.event
-async def on_message_delete(message):
-    if message.guild is None:
-        return
+async def send_log(title, description, color=discord.Color.orange()):
     channel = bot.get_channel(LOG_CHANNEL_ID)
     if not channel:
         return
-
     embed = discord.Embed(
-        title="🗑️ Nachricht gelöscht",
-        description=f"Von {message.author.mention} in {message.channel.mention}",
-        color=discord.Color.red(),
+        title=title,
+        description=description,
+        color=color,
         timestamp=datetime.utcnow()
     )
-    embed.add_field(name="Inhalt", value=message.content or "*(leer)*")
-    embed.set_footer(text="Supernova Logs", icon_url=bot.user.avatar.url if bot.user.avatar else None)
+    embed.set_thumbnail(url=IMG_THUMB)
+    embed.set_footer(text="Supernova Logs", icon_url=IMG_FOOTER)
     await channel.send(embed=embed)
+
+@bot.event
+async def on_message_delete(message):
+    if message.guild and not message.author.bot:
+        await send_log(
+            "🗑️ Nachricht gelöscht",
+            f"Von {message.author.mention} in {message.channel.mention}\n**Inhalt:** {message.content or '*(leer)*'}",
+            discord.Color.red()
+        )
 
 # ---- Commands ----
 @bot.command()
 async def ping(ctx):
-    await ctx.send("🏓 Pong!")
+    embed = discord.Embed(
+        title="🏓 Pong!",
+        description=f"Antwortzeit: {round(bot.latency * 1000)}ms",
+        color=discord.Color.blurple()
+    )
+    embed.set_thumbnail(url=IMG_THUMB)
+    await ctx.send(embed=embed)
 
 @bot.command()
 async def clear(ctx, amount: int):
     await ctx.channel.purge(limit=amount + 1)
-    await ctx.send(f"✅ {amount} Nachrichten gelöscht.", delete_after=5)
+    embed = discord.Embed(
+        title="🧹 Chat gesäubert",
+        description=f"{amount} Nachrichten gelöscht.",
+        color=discord.Color.orange()
+    )
+    embed.set_thumbnail(url=IMG_THUMB)
+    await ctx.send(embed=embed, delete_after=5)
 
 # ---- Welcome & Leave ----
 @bot.event
@@ -125,25 +134,16 @@ async def on_member_join(member):
 
     embed = discord.Embed(
         title="**Welcome to Supernova | Hosted by Levin**",
-        description=f"Hey {member.mention}, willkommen auf **{member.guild.name}**! 🎉",
+        description=f"Willkommen {member.mention}! 🎉",
         color=discord.Color.green()
     )
-    embed.set_author(
-        name=member.name,
-        icon_url="https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-    )
-    embed.set_thumbnail(
-        url="https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-    )
-    embed.set_image(
-        url="https://cdn.discordapp.com/banners/1402963593527431280/a_00aa2372c379edf2e6dbbccc1ad36c50.gif?size=1024&animated=true"
-    )
-    embed.set_footer(
-        text=f"{member.guild.name}",
-        icon_url="https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-    )
+    embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
+    embed.set_thumbnail(url=IMG_THUMB)
+    embed.set_image(url=IMG_BANNER)
+    embed.set_footer(text=f"{member.guild.name}", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
+    await send_log("👋 Neuer User", f"{member.mention} ist beigetreten.", discord.Color.green())
 
 @bot.event
 async def on_member_remove(member):
@@ -153,28 +153,18 @@ async def on_member_remove(member):
 
     embed = discord.Embed(
         title="**Goodbye from Supernova | Hosted by Levin**",
-        description=f"{member.mention} hat **{member.guild.name}** verlassen. 👋",
+        description=f"{member.mention} hat den Server verlassen. 👋",
         color=discord.Color.red()
     )
-    embed.set_author(
-        name=member.name,
-        icon_url="https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-    )
-    embed.set_thumbnail(
-        url="https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-    )
-    embed.set_image(
-        url="https://cdn.discordapp.com/banners/1402963593527431280/a_00aa2372c379edf2e6dbbccc1ad36c50.gif?size=1024&animated=true"
-    )
-    embed.set_footer(
-        text=f"{member.guild.name}",
-        icon_url="https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-    )
+    embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
+    embed.set_thumbnail(url=IMG_THUMB)
+    embed.set_image(url=IMG_BANNER)
+    embed.set_footer(text=f"{member.guild.name}", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
+    await send_log("❌ User gegangen", f"{member.mention} hat den Server verlassen.", discord.Color.red())
 
-# ---- Keep Alive (falls Render/Replit braucht) ----
-from keep_alive import keep_alive
+# ---- Keep Alive ----
 keep_alive()
 
 # ---- Start ----
