@@ -10,7 +10,6 @@ intents.members = True  # required for join/leave and AutoRole
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # ---- IDs ----
-GUILD_ID = 1401492898293481505
 WELCOME_CHANNEL_ID = 1401715590259019816
 AUTO_ROLE_ID = 140000000000000000  # <-- replace with your AutoRole ID
 
@@ -37,11 +36,14 @@ async def on_member_join(member):
         print("Welcome channel not found")
         return
 
-    # AutoRole (also for bots)
+    # AutoRole (für alle Mitglieder, auch Bots)
     role = member.guild.get_role(AUTO_ROLE_ID)
     if role:
-        await member.add_roles(role)
-        print(f"AutoRole {role.name} assigned to {member}")
+        try:
+            await member.add_roles(role)
+            print(f"AutoRole {role.name} assigned to {member}")
+        except Exception as e:
+            print(f"Could not assign role to {member}: {e}")
 
     # Welcome Embed
     embed = discord.Embed(
@@ -53,8 +55,12 @@ async def on_member_join(member):
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_image(url=IMG_BANNER)
     embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
-    await channel.send(embed=embed)
-    print(f"Welcome embed sent for {member}")
+
+    try:
+        await channel.send(embed=embed)
+        print(f"Welcome embed sent for {member}")
+    except Exception as e:
+        print(f"Could not send welcome embed for {member}: {e}")
 
 # ---- Leave ----
 @bot.event
@@ -73,8 +79,12 @@ async def on_member_remove(member):
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_image(url=IMG_BANNER)
     embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
-    await channel.send(embed=embed)
-    print(f"Leave embed sent for {member}")
+
+    try:
+        await channel.send(embed=embed)
+        print(f"Leave embed sent for {member}")
+    except Exception as e:
+        print(f"Could not send leave embed for {member}: {e}")
 
 # ---- Keep Alive ----
 keep_alive()  # keeps the bot online with Render + UptimeRobot
