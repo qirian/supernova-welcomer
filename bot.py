@@ -16,7 +16,7 @@ AUTO_ROLE_ID = 140000000000000000        # <-- replace with your AutoRole ID
 
 # ---- Image Links ----
 IMG_THUMB = "https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-IMG_AUTHOR = "https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
+IMG_AUTHOR = IMG_THUMB
 IMG_FOOTER = IMG_THUMB
 IMG_BANNER = "https://cdn.discordapp.com/banners/1402963593527431280/a_00aa2372c379edf2e6dbbccc1ad36c50.gif?size=1024&animated=true"
 
@@ -46,10 +46,17 @@ async def on_member_join(member):
         except Exception as e:
             print(f"Could not assign role to {member}: {e}")
 
+    # Mitglied-Typ Kennzeichnung
+    member_type = "(Bot)" if member.bot else ""
+
+    # Gesamtzahl Mitglieder & Bots
+    total_members = sum(1 for m in member.guild.members if not m.bot)
+    total_bots = sum(1 for m in member.guild.members if m.bot)
+
     # Welcome Embed
     embed = discord.Embed(
         title="Welcome to Supernova | Hosted by Levin",
-        description=f"Welcome {member.mention} to **Supernova | Hosted by Levin**",
+        description=f"Welcome {member.mention} {member_type} to the server, we're now with you **{total_members} Members** and **{total_bots} Bots**.",
         color=discord.Color(int("7b28a1", 16))  # Embed color
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=IMG_AUTHOR)
@@ -74,9 +81,13 @@ async def on_member_remove(member):
         print("Leave channel not found")
         return
 
+    member_type = "(Bot)" if member.bot else ""
+    total_members = sum(1 for m in member.guild.members if not m.bot)
+    total_bots = sum(1 for m in member.guild.members if m.bot)
+
     embed = discord.Embed(
         title="Goodbye from Supernova | Hosted by Levin",
-        description=f"Have a good Day {member.mention} from **Supernova | Hosted by Levin**",
+        description=f"{member.mention} {member_type} has left the server, without you we're **{total_members} Members** and **{total_bots} Bots**.",
         color=discord.Color(int("7b28a1", 16))  # Embed color
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=IMG_AUTHOR)
