@@ -39,6 +39,7 @@ async def heartbeat_embed():
     channel = bot.get_channel(STATUS_CHANNEL_ID)
     guild = bot.get_guild(GUILD_ID)
     if not channel or not guild:
+        print("❌ Heartbeat: Channel oder Guild nicht gefunden!")
         return
 
     embed = discord.Embed(
@@ -50,6 +51,7 @@ async def heartbeat_embed():
     embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
+    print("✅ Heartbeat Embed gesendet.")
 
 # ---- Persistent Status Embed ----
 @tasks.loop(minutes=5)
@@ -57,6 +59,7 @@ async def update_status_embed():
     channel = bot.get_channel(STATUS_CHANNEL_ID)
     guild = bot.get_guild(GUILD_ID)
     if not channel or not guild:
+        print("❌ Status: Channel oder Guild nicht gefunden!")
         return
 
     embed = discord.Embed(
@@ -71,18 +74,20 @@ async def update_status_embed():
     embed.add_field(name="🟢 Status", value="Stabil", inline=True)
     embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
 
-    # Editieren statt spammen
     async for msg in channel.history(limit=20):
         if msg.author == bot.user and msg.embeds:
             await msg.edit(embed=embed)
+            print("✅ Status Embed aktualisiert.")
             break
     else:
         await channel.send(embed=embed)
+        print("✅ Neues Status Embed gesendet.")
 
 # ---- Logging ----
 async def send_log(title, description, color=discord.Color.orange()):
     channel = bot.get_channel(LOG_CHANNEL_ID)
     if not channel:
+        print("❌ Log-Channel nicht gefunden!")
         return
     embed = discord.Embed(
         title=title,
@@ -93,6 +98,7 @@ async def send_log(title, description, color=discord.Color.orange()):
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_footer(text="Supernova Logs", icon_url=IMG_FOOTER)
     await channel.send(embed=embed)
+    print(f"📜 Log gesendet: {title}")
 
 @bot.event
 async def on_message_delete(message):
@@ -128,8 +134,10 @@ async def clear(ctx, amount: int):
 # ---- Welcome & Leave ----
 @bot.event
 async def on_member_join(member):
+    print(f"👋 Join Event ausgelöst: {member}")  # Debug
     channel = bot.get_channel(STATUS_CHANNEL_ID)
     if not channel:
+        print("❌ Join: Channel nicht gefunden!")
         return
 
     embed = discord.Embed(
@@ -143,12 +151,15 @@ async def on_member_join(member):
     embed.set_footer(text=f"{member.guild.name}", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
+    print("✅ Welcome Embed gesendet.")
     await send_log("👋 Neuer User", f"{member.mention} ist beigetreten.", discord.Color.green())
 
 @bot.event
 async def on_member_remove(member):
+    print(f"👋 Leave Event ausgelöst: {member}")  # Debug
     channel = bot.get_channel(STATUS_CHANNEL_ID)
     if not channel:
+        print("❌ Leave: Channel nicht gefunden!")
         return
 
     embed = discord.Embed(
@@ -162,6 +173,7 @@ async def on_member_remove(member):
     embed.set_footer(text=f"{member.guild.name}", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
+    print("✅ Leave Embed gesendet.")
     await send_log("❌ User gegangen", f"{member.mention} hat den Server verlassen.", discord.Color.red())
 
 # ---- Keep Alive ----
