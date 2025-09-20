@@ -17,10 +17,9 @@ STATUS_CHANNEL_ID = 1401715590259019816
 LOG_CHANNEL_ID = 1401822345953546284
 
 # ---- Image Links ----
-BOT_AVATAR = "https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-IMG_THUMB = BOT_AVATAR
-IMG_AUTHOR = BOT_AVATAR
-IMG_FOOTER = BOT_AVATAR
+IMG_THUMB = "https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
+IMG_AUTHOR = IMG_THUMB
+IMG_FOOTER = IMG_THUMB
 IMG_BANNER = "https://cdn.discordapp.com/banners/1402963593527431280/a_00aa2372c379edf2e6dbbccc1ad36c50.gif?size=1024&animated=true"
 
 # ---- On Ready ----
@@ -48,7 +47,7 @@ async def heartbeat_embed():
         color=discord.Color.green()
     )
     embed.set_thumbnail(url=IMG_THUMB)
-    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=BOT_AVATAR)
+    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
 
@@ -70,7 +69,7 @@ async def update_status_embed():
     embed.add_field(name="🤖 Bot", value="✅ Online", inline=True)
     embed.add_field(name="👥 Mitglieder", value=str(guild.member_count), inline=True)
     embed.add_field(name="🟢 Status", value="Stabil", inline=True)
-    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=BOT_AVATAR)
+    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
 
     # Editieren statt spammen
     async for msg in channel.history(limit=20):
@@ -92,7 +91,7 @@ async def send_log(title, description, color=discord.Color.orange()):
         timestamp=datetime.utcnow()
     )
     embed.set_thumbnail(url=IMG_THUMB)
-    embed.set_footer(text="Supernova Logs", icon_url=BOT_AVATAR)
+    embed.set_footer(text="Supernova Logs", icon_url=IMG_FOOTER)
     await channel.send(embed=embed)
 
 @bot.event
@@ -112,7 +111,7 @@ async def ping(ctx):
         description=f"Antwortzeit: {round(bot.latency * 1000)}ms",
         color=discord.Color.blurple()
     )
-    embed.set_thumbnail(url=BOT_AVATAR)
+    embed.set_thumbnail(url=IMG_THUMB)
     await ctx.send(embed=embed)
 
 @bot.command()
@@ -123,7 +122,7 @@ async def clear(ctx, amount: int):
         description=f"{amount} Nachrichten gelöscht.",
         color=discord.Color.orange()
     )
-    embed.set_thumbnail(url=BOT_AVATAR)
+    embed.set_thumbnail(url=IMG_THUMB)
     await ctx.send(embed=embed, delete_after=5)
 
 # ---- Welcome & Leave ----
@@ -141,7 +140,7 @@ async def on_member_join(member):
     embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_image(url=IMG_BANNER)
-    embed.set_footer(text=f"{member.guild.name}", icon_url=BOT_AVATAR)
+    embed.set_footer(text=f"{member.guild.name}", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
     await send_log("👋 Neuer User", f"{member.mention} ist beigetreten.", discord.Color.green())
@@ -160,7 +159,7 @@ async def on_member_remove(member):
     embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_image(url=IMG_BANNER)
-    embed.set_footer(text=f"{member.guild.name}", icon_url=BOT_AVATAR)
+    embed.set_footer(text=f"{member.guild.name}", icon_url=IMG_FOOTER)
 
     await channel.send(embed=embed)
     await send_log("❌ User gegangen", f"{member.mention} hat den Server verlassen.", discord.Color.red())
