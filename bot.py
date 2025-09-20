@@ -66,7 +66,7 @@ async def on_member_join(member):
     # Welcome Embed
     embed = discord.Embed(
         title="Welcome to Supernova | Hosted by Levin",
-        description=f"Welcome {member.mention} {member_type} to the server, we're now with you **{total_members} Members** and **{total_bots} Bots**.",
+        description=f"Welcome {member.mention} {member_type} has joined the server, we're now with you **{total_members} Members** and **{total_bots} Bots**.",
         color=discord.Color(int("7b28a1", 16))
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=IMG_AUTHOR)
