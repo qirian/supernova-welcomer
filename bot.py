@@ -16,7 +16,7 @@ AUTO_ROLE_ID = 140000000000000000        # <-- replace with your AutoRole ID
 
 # ---- Image Links ----
 IMG_THUMB = "https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
-IMG_AUTHOR = IMG_THUMB
+IMG_AUTHOR = "https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
 IMG_FOOTER = IMG_THUMB
 IMG_BANNER = "https://cdn.discordapp.com/banners/1402963593527431280/a_00aa2372c379edf2e6dbbccc1ad36c50.gif?size=1024&animated=true"
 
@@ -52,7 +52,7 @@ async def on_member_join(member):
         description=f"Welcome {member.mention} to **Supernova | Hosted by Levin**",
         color=discord.Color(int("7b28a1", 16))  # Embed color
     )
-    embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
+    embed.set_author(name="Supernova x Welcomer", icon_url=IMG_AUTHOR)
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_image(url=IMG_BANNER)
     embed.set_footer(
@@ -79,7 +79,7 @@ async def on_member_remove(member):
         description=f"Have a good Day {member.mention} from **Supernova | Hosted by Levin**",
         color=discord.Color(int("7b28a1", 16))  # Embed color
     )
-    embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
+    embed.set_author(name="Supernova x Welcomer", icon_url=IMG_AUTHOR)
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_image(url=IMG_BANNER)
     embed.set_footer(
