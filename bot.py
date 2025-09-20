@@ -46,16 +46,22 @@ async def on_member_join(member):
         except Exception as e:
             print(f"Could not assign role to {member}: {e}")
 
+    # Mitglied-Typ Kennzeichnung
+    member_type = "(Bot)" if member.bot else ""
+
     # Welcome Embed
     embed = discord.Embed(
         title="Welcome to Supernova | Hosted by Levin",
-        description=f"Welcome {member.mention} to the server",
-        color=discord.Color.green()
+        description=f"Welcome {member.mention} {member_type} to the server",
+        color=discord.Color(int("7b28a1", 16))  # Embed color
     )
     embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_image(url=IMG_BANNER)
-    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
+    embed.set_footer(
+        text="© 2022–2024 Supernova | Hosted by Levin. All Rights Reserved.",
+        icon_url=IMG_FOOTER
+    )
 
     try:
         await channel.send(embed=embed)
@@ -71,15 +77,20 @@ async def on_member_remove(member):
         print("Leave channel not found")
         return
 
+    member_type = "(Bot)" if member.bot else ""
+
     embed = discord.Embed(
         title="Goodbye from Supernova | Hosted by Levin",
-        description=f"{member.mention} has left the server",
-        color=discord.Color.red()
+        description=f"{member.mention} {member_type} has left the server",
+        color=discord.Color(int("7b28a1", 16))  # Embed color
     )
     embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
     embed.set_thumbnail(url=IMG_THUMB)
     embed.set_image(url=IMG_BANNER)
-    embed.set_footer(text="Supernova | Hosted by Levin", icon_url=IMG_FOOTER)
+    embed.set_footer(
+        text="© 2022–2024 Supernova | Hosted by Levin. All Rights Reserved.",
+        icon_url=IMG_FOOTER
+    )
 
     try:
         await channel.send(embed=embed)
