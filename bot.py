@@ -37,7 +37,7 @@ async def on_member_join(member):
         print("Welcome channel not found")
         return
 
-    # AutoRole
+    # AutoRole (also for bots)
     role = member.guild.get_role(AUTO_ROLE_ID)
     if role:
         await member.add_roles(role)
