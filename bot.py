@@ -46,13 +46,10 @@ async def on_member_join(member):
         except Exception as e:
             print(f"Could not assign role to {member}: {e}")
 
-    # Mitglied-Typ Kennzeichnung
-    member_type = "(Bot)" if member.bot else ""
-
     # Welcome Embed
     embed = discord.Embed(
         title="Welcome to Supernova | Hosted by Levin",
-        description=f"Welcome {member.mention} {member_type} to the server",
+        description=f"Welcome {member.mention} to **Supernova | Hosted by Levin**",
         color=discord.Color(int("7b28a1", 16))  # Embed color
     )
     embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
@@ -77,11 +74,9 @@ async def on_member_remove(member):
         print("Leave channel not found")
         return
 
-    member_type = "(Bot)" if member.bot else ""
-
     embed = discord.Embed(
         title="Goodbye from Supernova | Hosted by Levin",
-        description=f"{member.mention} {member_type} has left the server",
+        description=f"Have a good Day {member.mention} from **Supernova | Hosted by Levin**",
         color=discord.Color(int("7b28a1", 16))  # Embed color
     )
     embed.set_author(name=member.name, icon_url=IMG_AUTHOR)
