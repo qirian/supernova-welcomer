@@ -10,8 +10,9 @@ intents.members = True  # required for join/leave and AutoRole
 bot = commands.Bot(command_prefix="!", intents=intents)
 
 # ---- IDs ----
-WELCOME_CHANNEL_ID = 1401715590259019816
-AUTO_ROLE_ID = 140000000000000000  # <-- replace with your AutoRole ID
+WELCOME_CHANNEL_ID = 1418440616131428482  # Welcome Channel
+LEAVE_CHANNEL_ID = 1418441039701610516   # Leave Channel
+AUTO_ROLE_ID = 140000000000000000        # <-- replace with your AutoRole ID
 
 # ---- Image Links ----
 IMG_THUMB = "https://cdn.discordapp.com/attachments/1401822345953546284/1418750912758943754/emvpuh1.gif"
@@ -65,7 +66,7 @@ async def on_member_join(member):
 # ---- Leave ----
 @bot.event
 async def on_member_remove(member):
-    channel = bot.get_channel(WELCOME_CHANNEL_ID)
+    channel = bot.get_channel(LEAVE_CHANNEL_ID)
     if not channel:
         print("Leave channel not found")
         return
