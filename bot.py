@@ -27,15 +27,18 @@ last_messages = {}
 
 # --- Funktion um doppelte Embeds zu verhindern ---
 async def send_unique_embed(channel, embed, kind):
-    """Send embed and auto-delete old duplicates, keeping the newest one"""
+    """Send embed only if no existing duplicate in channel"""
+    # Prüfe, ob eine Nachricht mit derselben kind-ID schon existiert
     if kind in last_messages:
         try:
             old_msg = await channel.fetch_message(last_messages[kind])
-            if old_msg:
-                await old_msg.delete()
+            if old_msg and old_msg.embeds:
+                # Bereits vorhanden -> nichts senden
+                return old_msg
         except discord.NotFound:
             pass
 
+    # Neue Nachricht senden und speichern
     msg = await channel.send(embed=embed)
     last_messages[kind] = msg.id
     return msg
