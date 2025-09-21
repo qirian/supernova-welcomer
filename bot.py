@@ -65,15 +65,10 @@ async def on_member_join(member):
     if role_all:
         await member.add_roles(role_all)
 
-    # Rolle je nach User oder Bot
-    if member.bot:
-        role_bot = member.guild.get_role(ROLE_BOT_ID)
-        if role_bot:
-            await member.add_roles(role_bot)
-    else:
-        role_user = member.guild.get_role(ROLE_USER_ID)
-        if role_user:
-            await member.add_roles(role_user)
+    # Jeder kriegt User-Rolle (Bots werden wie User behandelt)
+    role_user = member.guild.get_role(ROLE_USER_ID)
+    if role_user:
+        await member.add_roles(role_user)
 
     # Welcome nur einmal
     if already_sent(member.guild.id, member.id, "welcome"):
@@ -81,12 +76,11 @@ async def on_member_join(member):
 
     channel = member.guild.get_channel(WELCOME_CHANNEL_ID)
     if channel:
-        total_members = sum(1 for m in member.guild.members if not m.bot)
-        total_bots = sum(1 for m in member.guild.members if m.bot)
+        total_members = len(member.guild.members)
 
         embed = discord.Embed(
             title="Welcome to Supernova | Hosted by Levin",
-            description=f"Welcome {member.mention} (Bot) has joined the server, we're now with you {total_members} Members and {total_bots} Bots.",
+            description=f"Welcome {member.mention} to the server, we're now {total_members} Members.",
             color=EMBED_COLOR
         )
         embed.set_thumbnail(url=THUMBNAIL_URL)
@@ -105,12 +99,11 @@ async def on_member_remove(member):
 
     channel = member.guild.get_channel(LEAVE_CHANNEL_ID)
     if channel:
-        total_members = sum(1 for m in member.guild.members if not m.bot)
-        total_bots = sum(1 for m in member.guild.members if m.bot)
+        total_members = len(member.guild.members)
 
         embed = discord.Embed(
             title="Goodbye from Supernova | Hosted by Levin",
-            description=f"{member.mention} (Bot) has left the server, without you we're {total_members} Members and {total_bots} Bots.",
+            description=f"{member.mention} has left the server, without you we're {total_members} Members.",
             color=EMBED_COLOR
         )
         embed.set_thumbnail(url=THUMBNAIL_URL)
@@ -150,7 +143,7 @@ async def on_member_update(before, after):
 async def on_ready():
     print(f"Welcomer Bot logged in as {bot.user}")
     await bot.change_presence(activity=discord.Streaming(
-        name="discord.gg/supernova",
+        name="dicsord.gg/supernova",
         url="https://www.twitch.tv/qirixn"
     ))
 
