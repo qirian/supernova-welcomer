@@ -63,7 +63,7 @@ async def on_member_join(member):
 
     embed = discord.Embed(
         title="Welcome to **Supernova | Hosted by Levin**",
-        description=f"Hey {member.mention} Welcome to our Server!\nWe're now with you **{total_members} Members** and **{total_bots} Bots**.",
+        description=f"Hey {member.mention} Welcome to our Server! We're now with you **{total_members} Members** and **{total_bots} Bots**.",
         color=0x7b28a1
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
@@ -96,7 +96,7 @@ async def on_member_remove(member):
 
     embed = discord.Embed(
         title="Goodbye from **Supernova | Hosted by Levin**",
-        description=f"Hey {member.mention} Thank you for your Visit!\nWe're now without you **{total_members} Members** and **{total_bots} Bots**.",
+        description=f"Hey {member.mention} Thank you for your Visit! We're now without you **{total_members} Members** and **{total_bots} Bots**.",
         color=0x7b28a1
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
@@ -114,12 +114,12 @@ async def on_guild_update(before, after):
             return
 
         booster_count = after.premium_subscription_count
-        # Optional: Boost Level (kann z.B. 1 pro 2 Boosts sein)
+        # Optional: Boost Level (z.B. 1 pro 2 Boosts)
         boost_level = booster_count // 2 if booster_count >= 2 else 1
 
         embed = discord.Embed(
             title="A new Booster have appeared",
-            description=f"Thank you {after.owner.mention} for your Boosting!\nWe have now thanks to you **{booster_count} Boosts** and we're now on **Boosting Level {boost_level}**.",
+            description=f"Thank you {after.owner.mention} for your Boosting! We're having thanks to you **{booster_count} Boosts** and are on **Boosting Level {boost_level}**.",
             color=0x7b28a1
         )
         embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
