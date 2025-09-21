@@ -1,6 +1,7 @@
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 import os
+import asyncio
 from keep_alive import keep_alive
 
 intents = discord.Intents.default()
@@ -25,20 +26,19 @@ FOOTER_ICON = "https://cdn.discordapp.com/attachments/1401822345953546284/141875
 # Cache für letzte Nachrichten
 last_messages = {}
 
-# --- Funktion um doppelte Embeds zu verhindern ---
+# --- Funktion zum Senden und automatischen Löschen doppelter Embeds ---
 async def send_unique_embed(channel, embed, kind):
-    """Send embed only if no existing duplicate in channel"""
-    # Prüfe, ob eine Nachricht mit derselben kind-ID schon existiert
+    """Send embed and delete old duplicates after 1 second"""
     if kind in last_messages:
         try:
             old_msg = await channel.fetch_message(last_messages[kind])
             if old_msg and old_msg.embeds:
-                # Bereits vorhanden -> nichts senden
-                return old_msg
+                # Alte Nachricht nach 1 Sekunde löschen
+                await asyncio.sleep(1)
+                await old_msg.delete()
         except discord.NotFound:
             pass
 
-    # Neue Nachricht senden und speichern
     msg = await channel.send(embed=embed)
     last_messages[kind] = msg.id
     return msg
@@ -63,17 +63,13 @@ async def on_member_join(member):
 
     embed = discord.Embed(
         title="Supernova x Welcomer",
-        description=f"Welcome {member.mention} to **Supernova | Hosted by Levin**\n\n"
-                    f"We're now with you {total_members} Members and {total_bots} Bots.",
+        description=f"{member.mention}\nWelcome to **Supernova | Hosted by Levin**\nWe're now with you {total_members} Members and {total_bots} Bots.",
         color=0x7b28a1
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
     embed.set_thumbnail(url=THUMBNAIL_URL)
     embed.set_image(url=IMAGE_URL)
-    embed.set_footer(
-        text="© 2022–2024 Supernova | Hosted by Levin. All Rights Reserved.",
-        icon_url=FOOTER_ICON
-    )
+    embed.set_footer(text="© 2022–2024 Supernova | Hosted by Levin. All Rights Reserved.", icon_url=FOOTER_ICON)
 
     await send_unique_embed(channel, embed, kind=f"welcome_{member.id}")
 
@@ -100,17 +96,13 @@ async def on_member_remove(member):
 
     embed = discord.Embed(
         title="Supernova x Welcomer",
-        description=f"Have a good day {member.mention} from **Supernova | Hosted by Levin**\n\n"
-                    f"Without you we're {total_members} Members and {total_bots} Bots.",
+        description=f"{member.mention}\nHave a good day from **Supernova | Hosted by Levin**\nWithout you we're {total_members} Members and {total_bots} Bots.",
         color=0x7b28a1
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
     embed.set_thumbnail(url=THUMBNAIL_URL)
     embed.set_image(url=IMAGE_URL)
-    embed.set_footer(
-        text="© 2022–2024 Supernova | Hosted by Levin. All Rights Reserved.",
-        icon_url=FOOTER_ICON
-    )
+    embed.set_footer(text="© 2022–2024 Supernova | Hosted by Levin. All Rights Reserved.", icon_url=FOOTER_ICON)
 
     await send_unique_embed(channel, embed, kind=f"leave_{member.id}")
 
@@ -125,16 +117,13 @@ async def on_guild_update(before, after):
 
         embed = discord.Embed(
             title="A new Boost has appeared.",
-            description=f"Thank you for your Boost! We now have {booster_count} Boosts thanks to you.",
+            description=f"Boosted by everyone!\nWe now have {booster_count} Boosts thanks to you.",
             color=0x7b28a1
         )
         embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
         embed.set_thumbnail(url=THUMBNAIL_URL)
         embed.set_image(url=IMAGE_URL)
-        embed.set_footer(
-            text="© 2022–2024 Supernova | Hosted by Levin. All Rights Reserved.",
-            icon_url=FOOTER_ICON
-        )
+        embed.set_footer(text="© 2022–2024 Supernova | Hosted by Levin. All Rights Reserved.", icon_url=FOOTER_ICON)
 
         await send_unique_embed(channel, embed, kind="boost")
 
