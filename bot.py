@@ -62,9 +62,8 @@ async def on_member_join(member):
     total_bots = len([m for m in member.guild.members if m.bot])
 
     embed = discord.Embed(
-        title="Welcome to Supernova | Hosted by Levin",
-        description=f"{member.mention} Welcome to **Supernova | Hosted by Levin.**\n"
-                    f"We're now with you **{total_members} Members** and **{total_bots} Bots**.",
+        title="Welcome to **Supernova | Hosted by Levin**",
+        description=f"Hey {member.mention} Welcome to our Server!\nWe're now with you **{total_members} Members** and **{total_bots} Bots**.",
         color=0x7b28a1
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
@@ -96,9 +95,8 @@ async def on_member_remove(member):
     total_bots = len([m for m in member.guild.members if m.bot])
 
     embed = discord.Embed(
-        title="Have a nice Day from Supernova | Hosted by Levin",
-        description=f"{member.mention} Have a Nice Day from **Supernova | Hosted by Levin.**\n"
-                    f"We're now without you **{total_members} Members** and **{total_bots} Bots**.",
+        title="Goodbye from **Supernova | Hosted by Levin**",
+        description=f"Hey {member.mention} Thank you for your Visit!\nWe're now without you **{total_members} Members** and **{total_bots} Bots**.",
         color=0x7b28a1
     )
     embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
@@ -121,8 +119,7 @@ async def on_guild_update(before, after):
 
         embed = discord.Embed(
             title="A new Booster have appeared",
-            description=f"Thank you {after.owner.mention} for your Boosting!\n"
-                        f"We have now thanks to you **{booster_count} Boosts** and we're now on **Boosting Level {boost_level}**.",
+            description=f"Thank you {after.owner.mention} for your Boosting!\nWe have now thanks to you **{booster_count} Boosts** and we're now on **Boosting Level {boost_level}**.",
             color=0x7b28a1
         )
         embed.set_author(name="Supernova x Welcomer", icon_url=AUTHOR_ICON)
