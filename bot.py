@@ -47,7 +47,7 @@ async def send_unique_embed(channel, embed, kind):
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Streaming(
-        name="discord.gg/supernova",
+        name="discord.gg/supernovaeu",
         url="https://www.twitch.tv/qirixn"
     ))
     print(f"Bot {bot.user} is ready.")
